@@ -126,7 +126,7 @@
 %define with_network 0%{!?_without_network:1}
 %define with_nfs 0%{!?_without_nfs:1}
 %define with_nginx 0%{!?_without_nginx:1}
-%define with_notify_desktop 0%{!?_without_notify_desktop:1}
+%define with_notify_desktop 0%{!?_without_notify_desktop:0}
 %define with_notify_email 0%{!?_without_notify_email:1}
 %define with_ntpd 0%{!?_without_ntpd:1}
 %define with_numa 0%{!?_without_numa:1}
@@ -209,7 +209,7 @@
 # plugin tokyotyrant disabled, requires tcrdb.h
 %define with_tokyotyrant 0%{!?_without_tokyotyrant:0}
 # plugin write_kafka disabled, requires librdkafka
-%define with_write_kafka 0%{!?_without_write_kafka:0}
+%define with_write_kafka 0%{!?_without_write_kafka:1}
 # plugin write_mongodb disabled, requires libmongoc
 %define with_write_mongodb 0%{!?_without_write_mongodb:0}
 # plugin xmms disabled, requires xmms
@@ -217,7 +217,7 @@
 
 Summary:	statistics collection and monitoring daemon
 Name:		collectd
-Version:	5.5.0
+Version:	5.5.1
 Release:	1%{?dist}
 URL:		http://collectd.org
 Source:		http://collectd.org/files/%{name}-%{version}.tar.bz2
@@ -750,7 +750,7 @@ using HTTP POST requests.
 Summary:       Write-kafka plugin for collectd
 Group:         System Environment/Daemons
 Requires:      %{name}%{?_isa} = %{version}-%{release}
-BuildRequires: rdkafka-devel
+BuildRequires: librdkafka-devel
 %description write_kafka
 The write_kafka plugin sends values to kafka, a distributed messaging system.
 %endif
