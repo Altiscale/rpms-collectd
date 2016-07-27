@@ -62,12 +62,12 @@
 %{?el7:%global _has_lvm2app_h 1}
 %{?el7:%global _has_libudev 1}
 %{?el7:%global _has_recent_librrd 1}
-%{?el7:%global _has_varnish4 1}
-%{?el7:%global _has_broken_libmemcached 1}
 %{?el7:%global _has_iproute 1}
 %{?el7:%global _has_atasmart 1}
 %{?el7:%global _has_hiredis 1}
 %{?el7:%global _has_asm_msr_index 1}
+%{?el7:%global _has_libmodbus 1}
+%{?el7:%global _has_xmms 1}
 
 # plugins enabled by default
 %define with_aggregation 0%{!?_without_aggregation:1}
@@ -116,7 +116,7 @@
 %define with_madwifi 0%{!?_without_madwifi:1}
 %define with_mbmon 0%{!?_without_mbmon:1}
 %define with_md 0%{!?_without_md:1}
-%define with_memcachec 0%{!?_without_memcachec:0%{!?_has_broken_libmemcached:1}}
+%define with_memcachec 0%{!?_without_memcachec:1}
 %define with_memcached 0%{!?_without_memcached:1}
 %define with_memory 0%{!?_without_memory:1}
 %define with_multimeter 0%{!?_without_multimeter:1}
@@ -165,7 +165,7 @@
 %define with_uptime 0%{!?_without_uptime:1}
 %define with_users 0%{!?_without_users:1}
 %define with_uuid 0%{!?_without_uuid:1}
-%define with_varnish 0%{!?_without_varnish:0%{!?_has_varnish4:1}}
+%define with_varnish 0%{!?_without_varnish:1}
 %define with_vmem 0%{!?_without_vmem:1}
 %define with_vserver 0%{!?_without_vserver:1}
 %define with_wireless 0%{!?_without_wireless:1}
@@ -176,6 +176,7 @@
 %define with_write_riemann 0%{!?_without_write_riemann:1}
 %define with_write_sensu 0%{!?_without_write_sensu:1}
 %define with_write_tsdb 0%{!?_without_write_tsdb:1}
+%define with_xmms 0%{!?_without_xmms:0%{?_has_xmms}}
 %define with_zfs_arc 0%{!?_without_zfs_arc:1}
 %define with_zookeeper 0%{!?_without_zookeeper:1}
 
@@ -212,30 +213,28 @@
 %define with_write_kafka 0%{!?_without_write_kafka:1}
 # plugin write_mongodb disabled, requires libmongoc
 %define with_write_mongodb 0%{!?_without_write_mongodb:0}
-# plugin xmms disabled, requires xmms
-%define with_xmms 0%{!?_without_xmms:0}
 
-Summary:	statistics collection and monitoring daemon
-Name:		collectd
-Version:	5.5.1
-Release:	1%{?dist}
-URL:		http://collectd.org
-Source:		http://collectd.org/files/%{name}-%{version}.tar.bz2
-License:	GPLv2
-Group:		System Environment/Daemons
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildRequires:	libgcrypt-devel, kernel-headers, libtool-ltdl-devel, libcap-devel
-Vendor:		collectd development team <collectd@verplant.org>
+Summary:  statistics collection and monitoring daemon
+Name:    collectd
+Version:  5.5.2
+Release:  1%{?dist}
+URL:    http://collectd.org
+Source:    http://collectd.org/files/%{name}-%{version}.tar.bz2
+License:  GPLv2
+Group:    System Environment/Daemons
+BuildRoot:  %{_tmppath}/%{name}-%{version}-root
+BuildRequires:  libgcrypt-devel, kernel-headers, libtool-ltdl-devel, libcap-devel
+Vendor:    collectd development team <collectd@verplant.org>
 
 %if 0%{?el7:1}
-Requires(pre):		initscripts
-Requires(post):		systemd
-Requires(preun):	systemd
-Requires(postun):	systemd
+Requires(pre):    initscripts
+Requires(post):    systemd
+Requires(preun):  systemd
+Requires(postun):  systemd
 %else
-Requires(post):		chkconfig
-Requires(preun):	chkconfig, initscripts
-Requires(postun):	initscripts
+Requires(post):    chkconfig
+Requires(preun):  chkconfig, initscripts
+Requires(postun):  initscripts
 %endif
 
 %description
@@ -248,10 +247,10 @@ every 10 seconds by default.
 
 %if %{with_amqp}
 %package amqp
-Summary:	AMQP plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	librabbitmq-devel
+Summary:  AMQP plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  librabbitmq-devel
 %description amqp
 The AMQP plugin transmits or receives values collected by collectd via the
 Advanced Message Queuing Protocol (AMQP).
@@ -259,29 +258,29 @@ Advanced Message Queuing Protocol (AMQP).
 
 %if %{with_apache}
 %package apache
-Summary:	Apache plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	curl-devel
+Summary:  Apache plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  curl-devel
 %description apache
 This plugin collects data provided by Apache's `mod_status'.
 %endif
 
 %if %{with_aquaero}
 %package aquaero
-Summary:	aquaero plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
+Summary:  aquaero plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
 %description aquaero
 Various sensors in the Aquaero 5 watercooling board made by Aquacomputer.
 %endif
 
 %if %{with_ascent}
 %package ascent
-Summary:	Ascent plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	libxml2-devel, curl-devel
+Summary:  Ascent plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  libxml2-devel, curl-devel
 %description ascent
 The Ascent plugin reads and parses the statistics page of Ascent, a free and
 open-source server software for the game World of Warcraft by Blizzard
@@ -299,10 +298,10 @@ Collects pressure and temperature from digital barometers.
 
 %if %{with_bind}
 %package bind
-Summary:	Bind plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	libxml2-devel, curl-devel
+Summary:  Bind plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  libxml2-devel, curl-devel
 %description bind
 The BIND plugin retrieves this information that's encoded in XML and provided
 via HTTP and submits the values to collectd.
@@ -320,10 +319,10 @@ Ceph plugin for collectd
 
 %if %{with_curl}
 %package curl
-Summary:	Curl plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	curl-devel
+Summary:  Curl plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  curl-devel
 %description curl
 The cURL plugin uses libcurl to read files and then parses them according to
 the configuration.
@@ -331,10 +330,10 @@ the configuration.
 
 %if %{with_curl_json}
 %package curl_json
-Summary:	Curl_json plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	curl-devel, yajl-devel
+Summary:  Curl_json plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  curl-devel, yajl-devel
 %description curl_json
 The cURL-JSON plugin queries JavaScript Object Notation (JSON) data using the
 cURL library and parses it according to the user's configuration.
@@ -342,10 +341,10 @@ cURL library and parses it according to the user's configuration.
 
 %if %{with_curl_xml}
 %package curl_xml
-Summary:	Curl_xml plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	curl-devel, libxml2-devel
+Summary:  Curl_xml plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  curl-devel, libxml2-devel
 %description curl_xml
 The cURL-XML plugin reads files using libcurl and parses it as Extensible
 Markup Language (XML).
@@ -353,10 +352,10 @@ Markup Language (XML).
 
 %if %{with_dbi}
 %package dbi
-Summary:	DBI plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	libdbi-devel
+Summary:  DBI plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  libdbi-devel
 %description dbi
 The DBI plugin uses libdbi, a database abstraction library, to execute SQL
 statements on a database and read back the result.
@@ -364,9 +363,9 @@ statements on a database and read back the result.
 
 %if %{with_disk}
 %package disk
-Summary:	disk plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
+Summary:  disk plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
 %{?_has_libudev:BuildRequires:  libudev-devel}
 %description disk
 The "disk" plugin collects information about the usage of physical disks and
@@ -375,10 +374,10 @@ logical disks (partitions).
 
 %if %{with_dns}
 %package dns
-Summary:	DNS plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}, libpcap >= 1.0
-BuildRequires:	libpcap-devel >= 1.0
+Summary:  DNS plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}, libpcap >= 1.0
+BuildRequires:  libpcap-devel >= 1.0
 %description dns
 The DNS plugin has a similar functionality to dnstop: It uses libpcap to get a
 copy of all traffic from/to port UDP/53 (that's the DNS port), interprets the
@@ -387,19 +386,19 @@ packets and collects statistics of your DNS traffic.
 
 %if %{with_email}
 %package email
-Summary:	Email plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}, spamassassin
+Summary:  Email plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}, spamassassin
 %description email
 This plugin collects data provided by spamassassin.
 %endif
 
 %if %{with_gmond}
 %package gmond
-Summary:	Gmond plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	ganglia-devel
+Summary:  Gmond plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  ganglia-devel
 %description gmond
 The gmond plugin subscribes to a Multicast group to receive data from gmond,
 the client daemon of the Ganglia project.
@@ -407,9 +406,9 @@ the client daemon of the Ganglia project.
 
 %if %{with_hddtemp}
 %package hddtemp
-Summary:	Hddtemp plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}, hddtemp
+Summary:  Hddtemp plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}, hddtemp
 %description hddtemp
 The HDDTemp plugin collects the temperature of hard disks. The temperatures are
 provided via SMART and queried by the external hddtemp daemon.
@@ -417,10 +416,10 @@ provided via SMART and queried by the external hddtemp daemon.
 
 %if %{with_ipmi}
 %package ipmi
-Summary:	IPMI plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	OpenIPMI-devel
+Summary:  IPMI plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  OpenIPMI-devel
 %description ipmi
 The IPMI plugin uses the OpenIPMI library to read hardware sensors from servers
 using the Intelligent Platform Management Interface (IPMI).
@@ -428,10 +427,10 @@ using the Intelligent Platform Management Interface (IPMI).
 
 %if %{with_iptables}
 %package iptables
-Summary:	IPtables plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	iptables-devel
+Summary:  IPtables plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  iptables-devel
 %description iptables
 The IPtables plugin can gather statistics from your ip_tables based packet
 filter (aka. firewall) for both the IPv4 and the IPv6 protocol. It can collect
@@ -440,11 +439,11 @@ the byte- and packet-counters of selected rules and submit them to collectd.
 
 %if %{with_java}
 %package java
-Summary:	Java plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	java-devel, jpackage-utils
-Requires:	java, jpackage-utils
+Summary:  Java plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  java-devel, jpackage-utils
+Requires:  java, jpackage-utils
 %description java
 This plugin for collectd allows plugins to be written in Java and executed
 in an embedded JVM.
@@ -462,10 +461,10 @@ This plugin logs in logstash JSON format
 
 %if %{with_lvm}
 %package lvm
-Summary:	LVM plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	lvm2-devel
+Summary:  LVM plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  lvm2-devel
 %description lvm
 This plugin collects size of “Logical Volumes” (LV) and “Volume Groups” (VG)
 of Linux' “Logical Volume Manager” (LVM).
@@ -473,10 +472,10 @@ of Linux' “Logical Volume Manager” (LVM).
 
 %if %{with_memcachec}
 %package memcachec
-Summary:	Memcachec plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	libmemcached-devel
+Summary:  Memcachec plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  libmemcached-devel
 %description memcachec
 The Memcachec plugin uses libmemcached to read statistics from a Memcached
 instance. Note that another plugin, named `memcached', exists and does a
@@ -485,9 +484,9 @@ similar job, without requiring the installation of libmemcached.
 
 %if %{with_mic}
 %package mic
-Summary:	mic plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
+Summary:  mic plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
 %description mic
 The mic plugin collects CPU usage, memory usage, temperatures and power
 consumption from Intel Many Integrated Core (MIC) CPUs.
@@ -498,17 +497,17 @@ consumption from Intel Many Integrated Core (MIC) CPUs.
 Summary:       modbus plugin for collectd
 Group:         System Environment/Daemons
 Requires:      %{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	libmodbus-devel
+BuildRequires:  libmodbus-devel
 %description modbus
 The modbus plugin collects values from Modbus/TCP enabled devices
 %endif
 
 %if %{with_mysql}
 %package mysql
-Summary:	MySQL plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	mysql-devel
+Summary:  MySQL plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  mysql-devel
 %description mysql
 MySQL querying plugin. This plugin provides data of issued commands, called
 handlers and database traffic.
@@ -516,30 +515,30 @@ handlers and database traffic.
 
 %if %{with_netlink}
 %package netlink
-Summary:	netlink plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	libmnl-devel, iproute-devel
+Summary:  netlink plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  libmnl-devel, iproute-devel
 %description netlink
 The netlink plugin collects detailed network interface and routing statistics.
 %endif
 
 %if %{with_nginx}
 %package nginx
-Summary:	Nginx plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	curl-devel
+Summary:  Nginx plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  curl-devel
 %description nginx
 This plugin gets data provided by nginx.
 %endif
 
 %if %{with_notify_desktop}
 %package notify_desktop
-Summary:	Notify_desktop plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	libnotify-devel, gtk2-devel
+Summary:  Notify_desktop plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  libnotify-devel, gtk2-devel
 %description notify_desktop
 The Notify Desktop plugin uses libnotify to display notifications to the user
 via the desktop notification specification, i. e. on an X display.
@@ -547,10 +546,10 @@ via the desktop notification specification, i. e. on an X display.
 
 %if %{with_notify_email}
 %package notify_email
-Summary:	Notify_email plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	libesmtp-devel
+Summary:  Notify_email plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  libesmtp-devel
 %description notify_email
 The Notify Email plugin uses libESMTP to send notifications to a configured
 email address.
@@ -558,10 +557,10 @@ email address.
 
 %if %{with_nut}
 %package nut
-Summary:	Nut plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	nut-devel
+Summary:  Nut plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  nut-devel
 %description nut
 This plugin for collectd provides Network UPS Tools support.
 %endif
@@ -578,15 +577,15 @@ This plugin reads monitoring information from OpenLDAP's cn=Monitor subtree.
 
 %if %{with_perl}
 %package perl
-Summary:	Perl plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-Requires:	perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
-	%if 0%{?rhel} >= 6
-BuildRequires:	perl-ExtUtils-Embed
-	%else
-BuildRequires:	perl
-	%endif
+Summary:  Perl plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+Requires:  perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
+  %if 0%{?rhel} >= 6
+BuildRequires:  perl-ExtUtils-Embed
+  %else
+BuildRequires:  perl
+  %endif
 %description perl
 The Perl plugin embeds a Perl interpreter into collectd and exposes the
 application programming interface (API) to Perl-scripts.
@@ -594,10 +593,10 @@ application programming interface (API) to Perl-scripts.
 
 %if %{with_pinba}
 %package pinba
-Summary:	Pinba plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	protobuf-c-devel
+Summary:  Pinba plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  protobuf-c-devel
 %description pinba
 The Pinba plugin receives and dispatches timing values from Pinba, a profiling
 extension for PHP.
@@ -605,10 +604,10 @@ extension for PHP.
 
 %if %{with_ping}
 %package ping
-Summary:	Ping plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	liboping-devel
+Summary:  Ping plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  liboping-devel
 %description ping
 The Ping plugin measures network latency using ICMP “echo requests”, usually
 known as “ping”.
@@ -616,10 +615,10 @@ known as “ping”.
 
 %if %{with_postgresql}
 %package postgresql
-Summary:	PostgreSQL plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	postgresql-devel
+Summary:  PostgreSQL plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  postgresql-devel
 %description postgresql
 The PostgreSQL plugin connects to and executes SQL statements on a PostgreSQL
 database.
@@ -627,14 +626,14 @@ database.
 
 %if %{with_python}
 %package python
-Summary:	Python plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-	%if 0%{?rhel} >= 6
+Summary:  Python plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+  %if 0%{?rhel} >= 6
 BuildRequires: python-devel
-	%else
+  %else
 BuildRequires: python26-devel
-	%endif
+  %endif
 %description python
 The Python plugin embeds a Python interpreter into collectd and exposes the
 application programming interface (API) to Python-scripts.
@@ -642,10 +641,10 @@ application programming interface (API) to Python-scripts.
 
 %if %{with_redis}
 %package redis
-Summary:	Redis plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	hiredis-devel
+Summary:  Redis plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  hiredis-devel
 %description redis
 The Redis plugin connects to one or more instances of Redis, a key-value store,
 and collects usage information using the hiredis library.
@@ -664,29 +663,29 @@ submits updates for RRD files to that daemon.
 
 %if %{with_rrdtool}
 %package rrdtool
-Summary:	RRDtool plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	rrdtool-devel
+Summary:  RRDtool plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  rrdtool-devel
 %description rrdtool
 The RRDtool plugin writes values to RRD-files using librrd.
 %endif
 
 %if %{with_sensors}
 %package sensors
-Summary:	Sensors plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	lm_sensors-devel
+Summary:  Sensors plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  lm_sensors-devel
 %description sensors
 This plugin for collectd provides querying of sensors supported by lm_sensors.
 %endif
 
 %if %{with_sigrok}
 %package sigrok
-Summary:	sigrok plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
+Summary:  sigrok plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
 %description sigrok
 Uses libsigrok as a backend, allowing any sigrok-supported device to have its
 measurements fed to collectd. This includes multimeters, sound level meters,
@@ -706,40 +705,40 @@ sectors.
 
 %if %{with_snmp}
 %package snmp
-Summary:	SNMP plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	net-snmp-devel
+Summary:  SNMP plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  net-snmp-devel
 %description snmp
 This plugin for collectd allows querying of network equipment using SNMP.
 %endif
 
 %if %{with_varnish}
 %package varnish
-Summary:	Varnish plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	varnish-libs-devel
+Summary:  Varnish plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  varnish-libs-devel
 %description varnish
 The Varnish plugin collects information about Varnish, an HTTP accelerator.
 %endif
 
 %if %{with_virt}
 %package virt
-Summary:	Virt plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	libvirt-devel
+Summary:  Virt plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  libvirt-devel
 %description virt
 This plugin collects information from virtualized guests.
 %endif
 
 %if %{with_write_http}
 %package write_http
-Summary:	Write-HTTP plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	curl-devel
+Summary:  Write-HTTP plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  curl-devel
 %description write_http
 The Write-HTTP plugin sends the values collected by collectd to a web-server
 using HTTP POST requests.
@@ -757,28 +756,38 @@ The write_kafka plugin sends values to kafka, a distributed messaging system.
 
 %if %{with_write_redis}
 %package write_redis
-Summary:	Write-Redis plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	hiredis-devel
+Summary:  Write-Redis plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  hiredis-devel
 %description write_redis
 The Write Redis plugin stores values in Redis, a “data structures server”.
 %endif
 
 %if %{with_write_riemann}
 %package write_riemann
-Summary:	riemann plugin for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
-BuildRequires:	protobuf-c-devel
+Summary:  riemann plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  protobuf-c-devel
 %description write_riemann
 The riemann plugin submits values to Riemann, an event stream processor.
 %endif
 
+%if %{with_xmms}
+%package xmms
+Summary:  XMMS plugin for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
+BuildRequires:  xmms-devel
+%description xmms
+The xmms plugin collects information from the XMMS music player.
+%endif
+
 %package collection3
-Summary:	Web-based viewer for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
+Summary:  Web-based viewer for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
 Requires: httpd
 %description collection3
 collection3 is a graphing front-end for the RRD files created by and filled
@@ -786,42 +795,42 @@ with collectd. It is written in Perl and should be run as an CGI-script.
 Graphs are generated on-the-fly, so no cron job or similar is necessary.
 
 %package php-collection
-Summary:	collect php webfrontent
-Group:		System Environment/Daemons
-Requires:	collectd = %{version}-%{release}
-Requires:	httpd
-Requires:	php
-Requires:	php-rrdtool
+Summary:  collect php webfrontent
+Group:    System Environment/Daemons
+Requires:  collectd = %{version}-%{release}
+Requires:  httpd
+Requires:  php
+Requires:  php-rrdtool
 %description php-collection
 PHP graphing frontend for RRD files created by and filled with collectd.
 
 %package contrib
-Summary:	Contrib files for collectd
-Group:		System Environment/Daemons
-Requires:	%{name}%{?_isa} = %{version}-%{release}
+Summary:  Contrib files for collectd
+Group:    System Environment/Daemons
+Requires:  %{name}%{?_isa} = %{version}-%{release}
 %description contrib
 All the files found under contrib/ in the source tree are bundled in this
 package.
 
 %package -n libcollectdclient
-Summary:	Collectd client library
-Group:		System Environment/Daemons
+Summary:  Collectd client library
+Group:    System Environment/Daemons
 %description -n libcollectdclient
 Collectd client library
 
 %package -n libcollectdclient-devel
-Summary:	Development files for libcollectdclient
-Group:		System Environment/Daemons
-Requires:	pkgconfig
-Requires:	libcollectdclient%{?_isa} = %{version}-%{release}
+Summary:  Development files for libcollectdclient
+Group:    System Environment/Daemons
+Requires:  pkgconfig
+Requires:  libcollectdclient%{?_isa} = %{version}-%{release}
 %description -n libcollectdclient-devel
 Development files for libcollectdclient
 
 %package -n collectd-utils
-Summary:	Collectd utilities
-Group:		System Environment/Daemons
-Requires:	libcollectdclient%{?_isa} = %{version}-%{release}
-Requires:	collectd%{?_isa} = %{version}-%{release}
+Summary:  Collectd utilities
+Group:    System Environment/Daemons
+Requires:  libcollectdclient%{?_isa} = %{version}-%{release}
+Requires:  collectd%{?_isa} = %{version}-%{release}
 %description -n collectd-utils
 Collectd utilities
 
@@ -1310,11 +1319,11 @@ Collectd utilities
 %endif
 
 %if %{with_python}
-	%if 0%{?rhel} >= 6
+  %if 0%{?rhel} >= 6
 %define _with_python --enable-python
-	%else
+  %else
 %define _with_python --enable-python --with-python=%{_bindir}/python2.6
-	%endif
+  %endif
 %else
 %define _with_python --disable-python
 %endif
@@ -1578,144 +1587,144 @@ Collectd utilities
 %endif
 
 %configure CFLAGS="%{optflags} -DLT_LAZY_OR_NOW=\"RTLD_LAZY|RTLD_GLOBAL\"" \
-	--disable-static \
-	--without-included-ltdl \
-	--enable-all-plugins=yes \
-	--enable-match_empty_counter \
-	--enable-match_hashed \
-	--enable-match_regex \
-	--enable-match_timediff \
-	--enable-match_value \
-	--enable-target_notification \
-	--enable-target_replace \
-	--enable-target_scale \
-	--enable-target_set \
-	--enable-target_v5upgrade \
-	%{?_with_aggregation} \
-	%{?_with_amqp} \
-	%{?_with_apache} \
-	%{?_with_apcups} \
-	%{?_with_apple_sensors} \
-	%{?_with_aquaero} \
-	%{?_with_ascent} \
-	%{?_with_barometer} \
-	%{?_with_battery} \
-	%{?_with_bind} \
-	%{?_with_ceph} \
-	%{?_with_cgroups} \
-	%{?_with_conntrack} \
-	%{?_with_contextswitch} \
-	%{?_with_cpu} \
-	%{?_with_cpufreq} \
-	%{?_with_csv} \
-	%{?_with_curl} \
-	%{?_with_curl_json} \
-	%{?_with_curl_xml} \
-	%{?_with_dbi} \
-	%{?_with_df} \
-	%{?_with_disk} \
-	%{?_with_dns} \
-	%{?_with_drbd} \
-	%{?_with_email} \
-	%{?_with_entropy} \
-	%{?_with_ethstat} \
-	%{?_with_exec} \
-	%{?_with_fhcount} \
-	%{?_with_filecount} \
-	%{?_with_fscache} \
-	%{?_with_gmond} \
-	%{?_with_hddtemp} \
-	%{?_with_interface} \
-	%{?_with_ipc} \
-	%{?_with_ipmi} \
-	%{?_with_iptables} \
-	%{?_with_ipvs} \
-	%{?_with_java} \
-	%{?_with_virt} \
-	%{?_with_log_logstash} \
-	%{?_with_lpar} \
-	%{?_with_lvm} \
-	%{?_with_memcachec} \
-	%{?_with_mic} \
-	%{?_with_modbus} \
-	%{?_with_multimeter} \
-	%{?_with_mysql} \
-	%{?_with_netapp} \
-	%{?_with_netlink} \
-	%{?_with_nginx} \
-	%{?_with_notify_desktop} \
-	%{?_with_notify_email} \
-	%{?_with_nut} \
-	%{?_with_onewire} \
-	%{?_with_openldap} \
-	%{?_with_oracle} \
-	%{?_with_perl} \
-	%{?_with_pf} \
-	%{?_with_pinba} \
-	%{?_with_ping} \
-	%{?_with_postgresql} \
-	%{?_with_python} \
-	%{?_with_redis} \
-	%{?_with_routeros} \
-	%{?_with_rrdcached} \
-	%{?_with_rrdtool} \
-	%{?_with_sensors} \
-	%{?_with_sigrok} \
-	%{?_with_smart} \
-	%{?_with_snmp} \
-	%{?_with_tape} \
-	%{?_with_tokyotyrant} \
-	%{?_with_varnish} \
-	%{?_with_write_http} \
-	%{?_with_write_kafka} \
-	%{?_with_write_mongodb} \
-	%{?_with_write_redis} \
-	%{?_with_xmms} \
-	%{?_with_zfs_arc} \
-	%{?_with_zookeeper} \
-	%{?_with_irq} \
-	%{?_with_load} \
-	%{?_with_logfile} \
-	%{?_with_madwifi} \
-	%{?_with_mbmon} \
-	%{?_with_md} \
-	%{?_with_memcached} \
-	%{?_with_memory} \
-	%{?_with_network} \
-	%{?_with_nfs} \
-	%{?_with_ntpd} \
-	%{?_with_numa} \
-	%{?_with_olsrd} \
-	%{?_with_openvpn} \
-	%{?_with_powerdns} \
-	%{?_with_processes} \
-	%{?_with_protocols} \
-	%{?_with_serial} \
-	%{?_with_statsd} \
-	%{?_with_swap} \
-	%{?_with_syslog} \
-	%{?_with_table} \
-	%{?_with_tail} \
-	%{?_with_tail_csv} \
-	%{?_with_tcpconns} \
-	%{?_with_teamspeak2} \
-	%{?_with_ted} \
-	%{?_with_thermal} \
-	%{?_with_threshold} \
-	%{?_with_turbostat} \
-	%{?_with_unixsock} \
-	%{?_with_uptime} \
-	%{?_with_users} \
-	%{?_with_uuid} \
-	%{?_with_vmem} \
-	%{?_with_vserver} \
-	%{?_with_wireless}\
-	%{?_with_write_graphite} \
-	%{?_with_write_http} \
-	%{?_with_write_log} \
-	%{?_with_write_riemann} \
-	%{?_with_write_sensu} \
-	%{?_with_write_tsdb}
+  --disable-static \
+  --without-included-ltdl \
+  --enable-all-plugins=yes \
+  --enable-match_empty_counter \
+  --enable-match_hashed \
+  --enable-match_regex \
+  --enable-match_timediff \
+  --enable-match_value \
+  --enable-target_notification \
+  --enable-target_replace \
+  --enable-target_scale \
+  --enable-target_set \
+  --enable-target_v5upgrade \
+  %{?_with_aggregation} \
+  %{?_with_amqp} \
+  %{?_with_apache} \
+  %{?_with_apcups} \
+  %{?_with_apple_sensors} \
+  %{?_with_aquaero} \
+  %{?_with_ascent} \
+  %{?_with_barometer} \
+  %{?_with_battery} \
+  %{?_with_bind} \
+  %{?_with_ceph} \
+  %{?_with_cgroups} \
+  %{?_with_conntrack} \
+  %{?_with_contextswitch} \
+  %{?_with_cpu} \
+  %{?_with_cpufreq} \
+  %{?_with_csv} \
+  %{?_with_curl} \
+  %{?_with_curl_json} \
+  %{?_with_curl_xml} \
+  %{?_with_dbi} \
+  %{?_with_df} \
+  %{?_with_disk} \
+  %{?_with_dns} \
+  %{?_with_drbd} \
+  %{?_with_email} \
+  %{?_with_entropy} \
+  %{?_with_ethstat} \
+  %{?_with_exec} \
+  %{?_with_fhcount} \
+  %{?_with_filecount} \
+  %{?_with_fscache} \
+  %{?_with_gmond} \
+  %{?_with_hddtemp} \
+  %{?_with_interface} \
+  %{?_with_ipc} \
+  %{?_with_ipmi} \
+  %{?_with_iptables} \
+  %{?_with_ipvs} \
+  %{?_with_java} \
+  %{?_with_virt} \
+  %{?_with_log_logstash} \
+  %{?_with_lpar} \
+  %{?_with_lvm} \
+  %{?_with_memcachec} \
+  %{?_with_mic} \
+  %{?_with_modbus} \
+  %{?_with_multimeter} \
+  %{?_with_mysql} \
+  %{?_with_netapp} \
+  %{?_with_netlink} \
+  %{?_with_nginx} \
+  %{?_with_notify_desktop} \
+  %{?_with_notify_email} \
+  %{?_with_nut} \
+  %{?_with_onewire} \
+  %{?_with_openldap} \
+  %{?_with_oracle} \
+  %{?_with_perl} \
+  %{?_with_pf} \
+  %{?_with_pinba} \
+  %{?_with_ping} \
+  %{?_with_postgresql} \
+  %{?_with_python} \
+  %{?_with_redis} \
+  %{?_with_routeros} \
+  %{?_with_rrdcached} \
+  %{?_with_rrdtool} \
+  %{?_with_sensors} \
+  %{?_with_sigrok} \
+  %{?_with_smart} \
+  %{?_with_snmp} \
+  %{?_with_tape} \
+  %{?_with_tokyotyrant} \
+  %{?_with_varnish} \
+  %{?_with_write_http} \
+  %{?_with_write_kafka} \
+  %{?_with_write_mongodb} \
+  %{?_with_write_redis} \
+  %{?_with_xmms} \
+  %{?_with_zfs_arc} \
+  %{?_with_zookeeper} \
+  %{?_with_irq} \
+  %{?_with_load} \
+  %{?_with_logfile} \
+  %{?_with_madwifi} \
+  %{?_with_mbmon} \
+  %{?_with_md} \
+  %{?_with_memcached} \
+  %{?_with_memory} \
+  %{?_with_network} \
+  %{?_with_nfs} \
+  %{?_with_ntpd} \
+  %{?_with_numa} \
+  %{?_with_olsrd} \
+  %{?_with_openvpn} \
+  %{?_with_powerdns} \
+  %{?_with_processes} \
+  %{?_with_protocols} \
+  %{?_with_serial} \
+  %{?_with_statsd} \
+  %{?_with_swap} \
+  %{?_with_syslog} \
+  %{?_with_table} \
+  %{?_with_tail} \
+  %{?_with_tail_csv} \
+  %{?_with_tcpconns} \
+  %{?_with_teamspeak2} \
+  %{?_with_ted} \
+  %{?_with_thermal} \
+  %{?_with_threshold} \
+  %{?_with_turbostat} \
+  %{?_with_unixsock} \
+  %{?_with_uptime} \
+  %{?_with_users} \
+  %{?_with_uuid} \
+  %{?_with_vmem} \
+  %{?_with_vserver} \
+  %{?_with_wireless}\
+  %{?_with_write_graphite} \
+  %{?_with_write_http} \
+  %{?_with_write_log} \
+  %{?_with_write_riemann} \
+  %{?_with_write_sensu} \
+  %{?_with_write_tsdb}
 
 
 %{__make} %{?_smp_mflags}
@@ -1784,14 +1793,14 @@ rm -rf %{buildroot}
 %if 0%{?el7:1}
 # stop sysv-based instance before upgrading to systemd
 if [ $1 -eq 2 ] && [ -f /var/lock/subsys/collectd ]; then
-	SYSTEMCTL_SKIP_REDIRECT=1 %{_initddir}/collectd stop >/dev/null 2>&1 || :
+  SYSTEMCTL_SKIP_REDIRECT=1 %{_initddir}/collectd stop >/dev/null 2>&1 || :
 fi
 %endif
 
 %post
 %if 0%{?el7:1}
 if [ $1 -eq 2 ]; then
-	/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+  /usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 %systemd_post collectd.service
 %else
@@ -1804,8 +1813,8 @@ fi
 %else
 # stop collectd only when uninstalling
 if [ $1 -eq 0 ]; then
-	/sbin/service collectd stop >/dev/null 2>&1 || :
-	/sbin/chkconfig --del collectd || :
+  /sbin/service collectd stop >/dev/null 2>&1 || :
+  /sbin/chkconfig --del collectd || :
 fi
 %endif
 
@@ -1815,7 +1824,7 @@ fi
 %else
 # restart collectd only when upgrading
 if [ $1 -eq 1 ]; then
-	/sbin/service collectd condrestart >/dev/null 2>&1 || :
+  /sbin/service collectd condrestart >/dev/null 2>&1 || :
 fi
 %endif
 
@@ -2055,9 +2064,9 @@ fi
 %{_includedir}/collectd/network_buffer.h
 %{_includedir}/collectd/lcc_features.h
 %{_libdir}/pkgconfig/libcollectdclient.pc
+%{_libdir}/libcollectdclient.so
 
 %files -n libcollectdclient
-%{_libdir}/libcollectdclient.so
 %{_libdir}/libcollectdclient.so.*
 
 %files -n collectd-utils
@@ -2323,6 +2332,11 @@ fi
 %{_libdir}/%{name}/write_riemann.so
 %endif
 
+%if %{with_xmms}
+%files xmms
+%{_libdir}/%{name}/xmms.so
+%endif
+
 %files collection3
 %{_localstatedir}/www/collection3
 %{_sysconfdir}/httpd/conf.d/collection3.conf
@@ -2347,11 +2361,12 @@ fi
 - Install collectdctl, collectd-tg and collectd-nagios in collectd-utils.rpm
 - Add build-dependency on libcap-devel
 
-* Mon Aug 19 2013 Marc Fournier <marc.fournier@camptocamp.com> 5.4.0-1
+* Mon Aug 19 2013 Marc Fournier <marc.fournier@camptocamp.com> 5.4.2-1
 - New upstream version
 - Build netlink plugin by default
 - Enable cgroups, lvm and statsd plugins
 - Enable (but don't build by default) mic, aquaero and sigrok plugins
+- Enable modbus, memcachec and xmms plugins on RHEL7
 
 * Tue Aug 06 2013 Marc Fournier <marc.fournier@camptocamp.com> 5.3.1-1
 - New upstream version
