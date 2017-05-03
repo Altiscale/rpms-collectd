@@ -92,7 +92,7 @@
 %define with_memcached 0%{!?_without_memcached:1}
 %define with_memory 0%{!?_without_memory:1}
 %define with_modbus 0%{!?_without_modbus:1}
-%define with_mqtt 0%{!?_without_mqtt:1}
+%define with_mqtt 0%{!?_without_mqtt:0}
 %define with_multimeter 0%{!?_without_multimeter:1}
 %define with_mysql 0%{!?_without_mysql:1}
 %define with_netlink 0%{!?_without_netlink:1}
@@ -134,7 +134,7 @@
 %define with_ted 0%{!?_without_ted:1}
 %define with_thermal 0%{!?_without_thermal:1}
 %define with_threshold 0%{!?_without_threshold:1}
-%define with_turbostat 0%{!?_without_turbostat:1}
+%define with_turbostat 0%{!?_without_turbostat:0}
 %define with_unixsock 0%{!?_without_unixsock:1}
 %define with_uptime 0%{!?_without_uptime:1}
 %define with_users 0%{!?_without_users:1}
@@ -186,7 +186,7 @@
 # plugin tokyotyrant disabled, requires tcrdb.h
 %define with_tokyotyrant 0%{!?_without_tokyotyrant:0}
 # plugin write_kafka disabled, requires librdkafka
-%define with_write_kafka 0%{!?_without_write_kafka:1}
+%define with_write_kafka 0%{!?_without_write_kafka:0}
 # plugin write_mongodb disabled, requires libmongoc
 %define with_write_mongodb 0%{!?_without_write_mongodb:0}
 # plugin write_riemann disabled, requires a new enough riemann_c_client
