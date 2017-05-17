@@ -186,7 +186,7 @@
 # plugin tokyotyrant disabled, requires tcrdb.h
 %define with_tokyotyrant 0%{!?_without_tokyotyrant:0}
 # plugin write_kafka disabled, requires librdkafka
-%define with_write_kafka 0%{!?_without_write_kafka:0}
+%define with_write_kafka 0%{!?_without_write_kafka:1}
 # plugin write_mongodb disabled, requires libmongoc
 %define with_write_mongodb 0%{!?_without_write_mongodb:0}
 # plugin write_riemann disabled, requires a new enough riemann_c_client
